@@ -49,12 +49,4 @@ Based on these metrics, the query outputs segments that can be used for email ma
 *   A Shopify Custom App with `read_orders` access.
 
 ### 1. Database Setup
-Run the SQL snippet below in your PostgreSQL database to create the table:
-```sql
-CREATE TABLE public.shopify_order_items (
-    id BIGINT PRIMARY KEY,
-    line_item_id BIGINT UNIQUE,
-    order_id BIGINT,
-    order_number VARCHAR(255),
-    -- ... (add all other columns from the SQL file)
-);
+Run the SQL snippet in the files to create the RFM segmentation.
