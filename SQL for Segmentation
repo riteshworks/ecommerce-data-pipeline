@@ -1,0 +1,167 @@
+SELECT
+  "__mb_source"."email" AS "email",
+  "__mb_source"."Accepts Marketing" AS "Accepts Marketing",
+  "__mb_source"."Billing Name" AS "Billing Name",
+  "__mb_source"."Billing Phone" AS "Billing Phone",
+  "__mb_source"."Billing City" AS "Billing City",
+  "__mb_source"."Billing State" AS "Billing State",
+  "__mb_source"."Total Orders" AS "Total Orders",
+  "__mb_source"."Kept Quantity" AS "Kept Quantity",
+  "__mb_source"."Cancelled Quantity" AS "Cancelled Quantity",
+  "__mb_source"."Total Quantity" AS "Total Quantity",
+  "__mb_source"."Avg Quantity per Order" AS "Avg Quantity per Order",
+  "__mb_source"."Days Since Last Order" AS "Days Since Last Order",
+  "__mb_source"."Avg Days Between Orders" AS "Avg Days Between Orders",
+  "__mb_source"."Days Overdue" AS "Days Overdue",
+  "__mb_source"."LTV" AS "LTV",
+  "__mb_source"."Net LTV" AS "Net LTV",
+  "__mb_source"."AOV" AS "AOV",
+  "__mb_source"."Total Discount" AS "Total Discount",
+  "__mb_source"."Total Refunded" AS "Total Refunded",
+  "__mb_source"."Cancellation Quantity Rate" AS "Cancellation Quantity Rate",
+  "__mb_source"."Unique SKUs" AS "Unique SKUs",
+  "__mb_source"."First Order Date" AS "First Order Date",
+  "__mb_source"."Last Order Date" AS "Last Order Date",
+  "__mb_source"."Customer Lifetime Days" AS "Customer Lifetime Days",
+  "__mb_source"."Orders per Year" AS "Orders per Year",
+  "__mb_source"."Expected Next Order" AS "Expected Next Order"
+FROM
+  (
+    WITH -- Get the most recent billing information per email (fixes the MAX() flaw)
+    latest_billing AS (
+      SELECT
+        DISTINCT ON (email) email,
+        billing_name,
+        billing_phone,
+        billing_city_name AS billing_city,
+        billing_state_name AS billing_state
+      FROM
+        public.shopify_order_items
+      ORDER BY
+        email,
+        created_at DESC
+    ),
+    -- Core aggregations per customer
+    aggregated AS (
+      SELECT
+        email,
+        -- Marketing opt-in (TRUE if ever accepted)
+        BOOL_OR(accepts_marketing = TRUE) AS "Accepts Marketing",
+        -- Order volume
+        COUNT(DISTINCT order_number) AS "Total Orders",
+        -- Quantities (kept & cancelled)
+        SUM(
+          CASE
+            WHEN cancelled_at IS NULL THEN lineitem_quantity
+            ELSE 0
+          END
+        ) AS "Kept Quantity",
+        SUM(
+          CASE
+            WHEN cancelled_at IS NOT NULL THEN lineitem_quantity
+            ELSE 0
+          END
+        ) AS "Cancelled Quantity",
+        -- Financials (only kept items contribute to LTV)
+        SUM(
+          CASE
+            WHEN cancelled_at IS NULL THEN total
+            ELSE 0
+          END
+        ) AS "LTV",
+        SUM(
+          CASE
+            WHEN cancelled_at IS NULL THEN discount_amount
+            ELSE 0
+          END
+        ) AS "Total Discount",
+        SUM(
+          CASE
+            WHEN cancelled_at IS NULL THEN refunded_amount
+            ELSE 0
+          END
+        ) AS "Total Refunded",
+        -- Product variety
+        COUNT(DISTINCT sku) AS "Unique SKUs",
+        -- Date boundaries
+        MIN(created_at) :: DATE AS "First Order Date",
+        MAX(created_at) :: DATE AS "Last Order Date",
+        -- Recency (days since last order)
+        (CAST(NOW() AS DATE) - MAX(created_at) :: DATE) AS "Days Since Last Order",
+        -- Average gap between orders (NULL if < 2 orders or gap = 0)
+        CASE
+          WHEN COUNT(DISTINCT order_number) > 1 THEN (MAX(created_at) :: DATE - MIN(created_at) :: DATE) :: FLOAT / NULLIF(COUNT(DISTINCT order_number) - 1, 0)
+          ELSE NULL
+        END AS "Avg Days Between Orders"
+      FROM
+        public.shopify_order_items
+      GROUP BY
+        email
+    ) -- Final output with derived metrics
+    SELECT
+      agg.email AS "email",
+      agg."Accepts Marketing" AS "Accepts Marketing",
+      lb.billing_name AS "Billing Name",
+      lb.billing_phone AS "Billing Phone",
+      lb.billing_city AS "Billing City",
+      lb.billing_state AS "Billing State",
+      agg."Total Orders" AS "Total Orders",
+      -- Quantity metrics
+      agg."Kept Quantity" AS "Kept Quantity",
+      agg."Cancelled Quantity" AS "Cancelled Quantity",
+      (agg."Kept Quantity" + agg."Cancelled Quantity") AS "Total Quantity",
+      CASE
+        WHEN agg."Total Orders" > 0 THEN (agg."Kept Quantity" + agg."Cancelled Quantity") :: FLOAT / agg."Total Orders"
+        ELSE 0
+      END AS "Avg Quantity per Order",
+      -- Temporal metrics
+      agg."Days Since Last Order" AS "Days Since Last Order",
+      agg."Avg Days Between Orders" AS "Avg Days Between Orders",
+      -- Overdue: only meaningful if >1 order and average gap > 0
+      CASE
+        WHEN agg."Total Orders" > 1
+        AND agg."Avg Days Between Orders" IS NOT NULL
+        AND agg."Avg Days Between Orders" > 0 THEN agg."Days Since Last Order" - agg."Avg Days Between Orders"
+        ELSE NULL
+      END AS "Days Overdue",
+      -- Financials
+      agg."LTV" AS "LTV",
+      (agg."LTV" - agg."Total Refunded") AS "Net LTV",
+      -- NEW: true profit
+      CASE
+        WHEN agg."Total Orders" > 0 THEN agg."LTV" :: FLOAT / agg."Total Orders"
+        ELSE 0
+      END AS "AOV",
+      agg."Total Discount" AS "Total Discount",
+      agg."Total Refunded" AS "Total Refunded",
+      -- Cancellation rate (based on quantity – more accurate than item count)
+      CASE
+        WHEN (agg."Kept Quantity" + agg."Cancelled Quantity") > 0 THEN agg."Cancelled Quantity" * 100.0 / (agg."Kept Quantity" + agg."Cancelled Quantity")
+        ELSE 0
+      END AS "Cancellation Quantity Rate",
+      agg."Unique SKUs" AS "Unique SKUs",
+      -- Lifetime span
+      agg."First Order Date" AS "First Order Date",
+      agg."Last Order Date" AS "Last Order Date",
+      (agg."Last Order Date" - agg."First Order Date") AS "Customer Lifetime Days",
+      -- Annualised order frequency
+      CASE
+        WHEN (agg."Last Order Date" - agg."First Order Date") > 0 THEN agg."Total Orders" * 365.0 / (agg."Last Order Date" - agg."First Order Date")
+        ELSE 0
+      END AS "Orders per Year",
+      -- Simple linear forecast (only if stable pattern exists)
+      CASE
+        WHEN agg."Total Orders" > 1
+        AND agg."Avg Days Between Orders" IS NOT NULL
+        AND agg."Avg Days Between Orders" > 0 THEN agg."Last Order Date" + agg."Avg Days Between Orders" :: INTEGER
+        ELSE NULL
+      END AS "Expected Next Order"
+    FROM
+      aggregated agg
+      LEFT JOIN latest_billing lb ON agg.email = lb.email
+    ORDER BY
+      agg."LTV" DESC,
+      agg.email ASC
+  ) AS "__mb_source"
+LIMIT
+  1048575
