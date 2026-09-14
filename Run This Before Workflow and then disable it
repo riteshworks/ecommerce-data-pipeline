@@ -1,0 +1,31 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DROP TABLE IF EXISTS shopify_order_items CASCADE;\nDROP TABLE IF EXISTS shopify_orders CASCADE;\n\nCREATE TABLE shopify_order_items (\n    id BIGSERIAL PRIMARY KEY,\n    \n    -- Cleaned Product & Variant Attributes\n    sku VARCHAR(100),                            -- Clean SKU (e.g., \"IEOUT12482\")\n    size VARCHAR(50),                            -- Clean Size (e.g., \"M\")\n    colour VARCHAR(50),                          -- Extracted Colour (e.g., \"Brown\")\n    \n    -- Shopify Identifiers & Order Structure\n    line_item_id BIGINT UNIQUE NOT NULL,\n    order_id BIGINT NOT NULL,\n    order_number VARCHAR(50) NOT NULL,\n    lineitem_quantity INT DEFAULT 1,\n    is_first_line_item BOOLEAN DEFAULT FALSE,\n    \n    -- Financials & Payment Details\n    total DECIMAL(10, 2),                        -- Order total (populated on first line item)\n    discount_amount DECIMAL(10, 2) DEFAULT 0.00,  -- Total discount applied\n    refunded_amount DECIMAL(10, 2) DEFAULT 0.00,  -- Total refunded amount\n    discount_codes VARCHAR(255),                 -- Applied promo codes\n    payment_method VARCHAR(100),                 -- Payment gateway (e.g., \"Shopify Payments\", \"PayPal\")\n    \n    -- Customer & Marketing Information\n    email VARCHAR(255),\n    accepts_marketing BOOLEAN DEFAULT FALSE,\n    billing_name VARCHAR(255),\n    billing_phone VARCHAR(50),\n    billing_city_name VARCHAR(100),\n    billing_state_name VARCHAR(100),\n    \n    -- Fulfillment & Timestamps\n    fulfillment_status VARCHAR(50),\n    fulfilled_at TIMESTAMP WITH TIME ZONE,          -- Date/time order was fulfilled\n    created_at TIMESTAMP WITH TIME ZONE,            -- Order creation timestamp\n    cancelled_at TIMESTAMP WITH TIME ZONE,          -- Cancellation timestamp (if applicable)\n    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3632,
+        -1616
+      ],
+      "id": "70273969-5a24-4d70-ad87-e2607b8c5f63",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "0dtTsEXuiIvYHuJS",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "connections": {},
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "827abb11a9e4284c9960c2b03833fd911a9c290dfc85220fbc61b375e053ab57"
+  }
+}
