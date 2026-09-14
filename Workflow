@@ -1,0 +1,210 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "5177653e-0087-46ae-a355-9028ce1b0015",
+      "name": "Start Export",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-3632, -1248]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.data.currentBulkOperation.status }}",
+              "value2": "COMPLETED"
+            }
+          ]
+        }
+      },
+      "id": "38155d8e-da6f-4aad-a920-e35b695d4920",
+      "name": "Is Operation Completed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [-2736, -1248]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": { "__rl": true, "value": "public", "mode": "list" },
+        "table": { "__rl": true, "value": "shopify_order_items", "mode": "name" },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "is_first_line_item": "={{ $json.is_first_line_item }}",
+            "accepts_marketing": "={{ $json.accepts_marketing }}",
+            "id": "={{ $json.line_item_id }}",
+            "line_item_id": "={{ $json.line_item_id }}",
+            "order_id": "={{ $json.order_id }}",
+            "lineitem_quantity": "={{ $json.lineitem_quantity }}",
+            "total": "={{ $json.total }}",
+            "refunded_amount": "={{ $json.refunded_amount }}",
+            "sku": "={{ $json.sku }}",
+            "size": "={{ $json.size }}",
+            "colour": "={{ $json.colour }}",
+            "order_number": "={{ $json.order_number }}",
+            "discount_codes": "={{ $json.discount_codes }}",
+            "email": "={{ $json.email }}",
+            "billing_name": "={{ $json.billing_name }}",
+            "billing_phone": "={{ $json.billing_phone }}",
+            "billing_city_name": "={{ $json.billing_city_name }}",
+            "billing_state_name": "={{ $json.billing_state_name }}",
+            "payment_method": "={{ $json.payment_method }}",
+            "fulfillment_status": "={{ $json.fulfillment_status }}",
+            "created_at": "={{ $json.created_at }}",
+            "cancelled_at": "={{ $json.cancelled_at }}",
+            "updated_at": "={{ $json.updated_at }}",
+            "discount_amount": "={{ $json.discount_amount }}",
+            "fulfilled_at": "={{ $json.fulfilled_at }}"
+          },
+          "matchingColumns": ["line_item_id"],
+          "schema": [
+            { "id": "id", "displayName": "id", "required": false, "defaultMatch": true, "display": true, "type": "number", "canBeUsedToMatch": true, "removed": false },
+            { "id": "sku", "displayName": "sku", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": false },
+            { "id": "size", "displayName": "size", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": false },
+            { "id": "colour", "displayName": "colour", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": false },
+            { "id": "line_item_id", "displayName": "line_item_id", "required": true, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true, "removed": false },
+            { "id": "order_id", "displayName": "order_id", "required": true, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": false },
+            { "id": "order_number", "displayName": "order_number", "required": true, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": false },
+            { "id": "lineitem_quantity", "displayName": "lineitem_quantity", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": false },
+            { "id": "is_first_line_item", "displayName": "is_first_line_item", "required": false, "defaultMatch": false, "display": true, "type": "boolean", "canBeUsedToMatch": false },
+            { "id": "total", "displayName": "total", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": false },
+            { "id": "discount_amount", "displayName": "discount_amount", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": false, "removed": false },
+            { "id": "refunded_amount", "displayName": "refunded_amount", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": false },
+            { "id": "discount_codes", "displayName": "discount_codes", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": false },
+            { "id": "payment_method", "displayName": "payment_method", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": false },
+            { "id": "email", "displayName": "email", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": false },
+            { "id": "accepts_marketing", "displayName": "accepts_marketing", "required": false, "defaultMatch": false, "display": true, "type": "boolean", "canBeUsedToMatch": false },
+            { "id": "billing_name", "displayName": "billing_name", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": false },
+            { "id": "billing_phone", "displayName": "billing_phone", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": false },
+            { "id": "billing_city_name", "displayName": "billing_city_name", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": false },
+            { "id": "billing_state_name", "displayName": "billing_state_name", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": false },
+            { "id": "fulfillment_status", "displayName": "fulfillment_status", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": false },
+            { "id": "fulfilled_at", "displayName": "fulfilled_at", "required": false, "defaultMatch": false, "display": true, "type": "dateTime", "canBeUsedToMatch": false, "removed": false },
+            { "id": "created_at", "displayName": "created_at", "required": false, "defaultMatch": false, "display": true, "type": "dateTime", "canBeUsedToMatch": false },
+            { "id": "cancelled_at", "displayName": "cancelled_at", "required": false, "defaultMatch": false, "display": true, "type": "dateTime", "canBeUsedToMatch": false },
+            { "id": "updated_at", "displayName": "updated_at", "required": false, "defaultMatch": false, "display": true, "type": "dateTime", "canBeUsedToMatch": false }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "58709def-fe2d-4cde-aec5-336b16ee1343",
+      "name": "Postgres Batch Upsert",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [-1840, -1200],
+      "credentials": {
+        "postgres": { "id": "YOUR_POSTGRES_CREDENTIAL_ID", "name": "Postgres account" }
+      }
+    },
+    {
+      "parameters": { "batchSize": 1500, "options": {} },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [-2064, -1248],
+      "id": "a11229ba-4cb1-4d39-96df-cdb54bfc5a0f",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [-1840, -1392],
+      "id": "3be6738c-ca1c-46cc-87d8-f40c7b684125",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": { "amount": 60 },
+      "id": "a3385caa-dc9b-4946-887f-d4be99c91e31",
+      "name": "Wait 60 Seconds",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [-3184, -1248],
+      "webhookId": "bulk-wait-step"
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "endpoint": "https://your-store.myshopify.com/admin/api/2024-04/graphql.json",
+        "query": "{\n  currentBulkOperation {\n    id\n    status\n    errorCode\n    url\n  }\n}\n",
+        "headerParametersUi": {
+          "parameter": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "X-Shopify-Access-Token", "value": "YOUR_SHOPIFY_ACCESS_TOKEN" }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.graphql",
+      "typeVersion": 1.1,
+      "position": [-2960, -1376],
+      "id": "4493a31b-3528-4c6d-b917-bf79035d4564",
+      "name": "STATUS",
+      "credentials": {
+        "httpHeaderAuth": { "id": "YOUR_HEADER_AUTH_ID", "name": "Header Auth account" }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "endpoint": "https://your-store.myshopify.com/admin/api/2024-04/graphql.json",
+        "query": "mutation {\n  bulkOperationRunQuery(query: \"\"\"\n  {\n    orders(query: \"status:any\") {\n      edges {\n        node {\n          id name createdAt updatedAt cancelledAt\n          email customerAcceptsMarketing\n          displayFulfillmentStatus paymentGatewayNames\n          totalPriceSet { shopMoney { amount } }\n          totalDiscountsSet { shopMoney { amount } }\n          discountCodes\n          billingAddress { firstName lastName phone city province }\n          fulfillments { id createdAt status }\n          transactions { id kind status gateway amount }\n          discountApplications {\n            edges {\n              node {\n                ... on DiscountCodeApplication {\n                  code allocationMethod\n                  value {\n                    ... on MoneyV2 { amount }\n                    ... on PricingPercentageValue { percentage }\n                  }\n                }\n              }\n            }\n          }\n          lineItems {\n            edges {\n              node {\n                id sku quantity\n                variant { title selectedOptions { name value } }\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n  \"\"\") {\n    bulkOperation { id status }\n    userErrors { field message }\n  }\n}\n",
+        "responseFormat": "string",
+        "headerParametersUi": {
+          "parameter": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "X-Shopify-Access-Token", "value": "YOUR_SHOPIFY_ACCESS_TOKEN" }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.graphql",
+      "typeVersion": 1.1,
+      "position": [-3408, -1248],
+      "id": "a914b33f-394b-42c6-965d-0a09d987a8e0",
+      "name": "Trigger Bulk",
+      "credentials": {
+        "httpHeaderAuth": { "id": "YOUR_HEADER_AUTH_ID", "name": "Header Auth account" }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('STATUS').item.json.data.currentBulkOperation.url }}",
+        "options": { "response": { "response": { "responseFormat": "text" } } }
+      },
+      "id": "3de50451-450d-4a65-983c-e5854d11a0dd",
+      "name": "Download JSONL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [-2512, -1248]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Read input payload\nlet fileData = '';\n\nfor (const item of $input.all()) {\n  if (item.binary) {\n    const binaryKey = Object.keys(item.binary)[0];\n    if (binaryKey && item.binary[binaryKey].data) {\n      fileData += Buffer.from(item.binary[binaryKey].data, 'base64').toString('utf-8');\n      continue;\n    }\n  }\n\n  if (typeof item.json === 'string') {\n    fileData += item.json + '\\n';\n  } else if (item.json?.data && typeof item.json.data === 'string') {\n    fileData += item.json.data + '\\n';\n  } else if (item.json?.body && typeof item.json.body === 'string') {\n    fileData += item.json.body + '\\n';\n  }\n}\n\nif (!fileData.trim()) {\n  throw new Error(\"No text/binary content found in input item.\");\n}\n\nconst lines = fileData.split('\\n').filter(line => line.trim() !== '');\n\nconst ordersMap = {};\nconst lineItemsMap = {};\nconst refundsMap = {};\nconst discountMap = {};\n\n// PASS 1: Index all objects\nfor (const line of lines) {\n  try {\n    const obj = JSON.parse(line);\n\n    // --- ORDER ---\n    if (obj.id && obj.id.includes('/Order/')) {\n      let paymentGateway = '';\n      if (Array.isArray(obj.paymentGatewayNames) && obj.paymentGatewayNames.length > 0) {\n        paymentGateway = obj.paymentGatewayNames.join(', ');\n      } else if (typeof obj.paymentGatewayNames === 'string') {\n        paymentGateway = obj.paymentGatewayNames;\n      }\n\n      let discountCodes = '';\n      if (Array.isArray(obj.discountCodes) && obj.discountCodes.length > 0) {\n        discountCodes = obj.discountCodes.join(', ');\n      }\n\n      let fulfilledAt = null;\n      if (Array.isArray(obj.fulfillments) && obj.fulfillments.length > 0 && obj.fulfillments[0].createdAt) {\n        fulfilledAt = new Date(obj.fulfillments[0].createdAt).toISOString();\n      }\n\n      ordersMap[obj.id] = {\n        _rawId: obj.id,\n        order_id: parseInt(obj.id.split('/').pop(), 10),\n        order_number: obj.name || '',\n        created_at: obj.createdAt ? new Date(obj.createdAt).toISOString() : null,\n        updated_at: obj.updatedAt ? new Date(obj.updatedAt).toISOString() : null,\n        cancelled_at: obj.cancelledAt ? new Date(obj.cancelledAt).toISOString() : null,\n        fulfilled_at: fulfilledAt,\n        email: obj.email || '',\n        accepts_marketing: Boolean(obj.customerAcceptsMarketing),\n        fulfillment_status: obj.displayFulfillmentStatus || 'UNFULFILLED',\n        total: parseFloat(obj.totalPriceSet?.shopMoney?.amount || 0),\n        discount_amount: parseFloat(obj.totalDiscountsSet?.shopMoney?.amount || 0),\n        discount_codes: discountCodes,\n        payment_method: paymentGateway,\n        billing_name: obj.billingAddress\n          ? `${obj.billingAddress.firstName || ''} ${obj.billingAddress.lastName || ''}`.trim()\n          : '',\n        billing_phone: obj.billingAddress?.phone || '',\n        billing_city_name: obj.billingAddress?.city || '',\n        billing_state_name: obj.billingAddress?.province || ''\n      };\n    }\n\n    // --- LINE ITEM ---\n    else if (obj.id && obj.id.includes('/LineItem/')) {\n      lineItemsMap[obj.id] = obj;\n    }\n\n    // --- REFUND TRANSACTION ---\n    else if (obj.id && obj.id.includes('/OrderTransaction/')) {\n      if (obj.kind === 'REFUND' && obj.status === 'SUCCESS') {\n        const amount = parseFloat(obj.amount || 0);\n        if (obj.__parentId) {\n          refundsMap[obj.__parentId] = (refundsMap[obj.__parentId] || 0) + amount;\n        }\n      }\n    }\n\n    // --- DISCOUNT APPLICATION ---\n    else if (\n      obj.__parentId &&\n      obj.__parentId.includes('/Order/') &&\n      (obj.code !== undefined || obj.allocationMethod !== undefined)\n    ) {\n      if (!discountMap[obj.__parentId]) {\n        discountMap[obj.__parentId] = { codes: [], details: [] };\n      }\n      if (obj.code) {\n        discountMap[obj.__parentId].codes.push(obj.code);\n      }\n      discountMap[obj.__parentId].details.push({\n        code: obj.code || '',\n        type: obj.value?.percentage != null ? 'percentage' : 'fixed',\n        value: obj.value?.percentage ?? obj.value?.amount ?? 0\n      });\n    }\n\n  } catch (err) {\n    continue;\n  }\n}\n\n// PASS 1.5: Override discount_codes using discountApplications child data\nfor (const [orderId, order] of Object.entries(ordersMap)) {\n  if (discountMap[orderId] && discountMap[orderId].codes.length > 0) {\n    order.discount_codes = discountMap[orderId].codes.join(', ');\n  }\n}\n\nconst itemsToInsert = [];\n\n// PASS 2: Sort line items by numeric ID\nconst sortedLineItems = Object.values(lineItemsMap).sort((a, b) => {\n  const aId = parseInt(a.id.split('/').pop(), 10);\n  const bId = parseInt(b.id.split('/').pop(), 10);\n  return aId - bId;\n});\n\nconst colourMap = {\n  'OR': 'Orange', 'YL': 'Yellow', 'SG': 'Sea Green',\n  'BK': 'Black', 'WH': 'White', 'RD': 'Red',\n  'BL': 'Blue', 'NV': 'Navy', 'GR': 'Green',\n  'GY': 'Grey', 'PK': 'Pink', 'MR': 'Maroon',\n  'BR': 'Brown', 'PL': 'Purple', 'BG': 'Beige',\n  'CR': 'Cream', 'MG': 'Magenta', 'TL': 'Teal',\n  'OL': 'Olive', 'RS': 'Rose', 'LV': 'Lavender',\n  'MT': 'Mustard', 'PE': 'Peach', 'CO': 'Coral',\n  'IN': 'Indigo', 'CH': 'Charcoal', 'SK': 'Sky Blue',\n  'WN': 'Wine', 'RU': 'Rust', 'BT': 'Bottle Green',\n  'OW': 'Off White',\n};\n\nconst orderItemTracker = {};\n\nfor (const item of sortedLineItems) {\n  const parentOrder = ordersMap[item.__parentId];\n  if (!parentOrder) continue;\n\n  const lineItemId = parseInt(item.id.split('/').pop(), 10);\n  const isFirst = !orderItemTracker[parentOrder.order_id];\n  orderItemTracker[parentOrder.order_id] = true;\n\n  const rawSku = item.sku || '';\n  let cleanSize = '';\n  let cleanColour = '';\n\n  // STEP 1: Extract from selectedOptions — primary source, most accurate\n  if (item.variant && Array.isArray(item.variant.selectedOptions)) {\n    for (const option of item.variant.selectedOptions) {\n      const optName = (option.name || '').toLowerCase().trim();\n      if (optName.includes('size')) cleanSize = option.value;\n      else if (optName.includes('color') || optName.includes('colour')) cleanColour = option.value;\n    }\n  }\n\n  // STEP 2: Fallback — parse from variant title, only fill what's still missing\n  if ((!cleanSize || !cleanColour) && item.variant?.title && item.variant.title !== 'Default Title') {\n    const parts = item.variant.title.split('/').map(p => p.trim());\n    if (parts.length >= 2) {\n      if (!cleanSize) cleanSize = parts[0];\n      if (!cleanColour) cleanColour = parts[1];\n    } else if (parts.length === 1) {\n      const val = parts[0];\n      if (!cleanSize && /^(XS|S|M|L|XL|XXL|XXXL|[0-9]+)$/i.test(val)) {\n        cleanSize = val;\n      } else if (!cleanColour) {\n        cleanColour = val;\n      }\n    }\n  }\n\n  // STEP 3+4: SKU-based extraction — only fills what's still missing (variant null or incomplete)\n  if ((!cleanSize || !cleanColour) && rawSku) {\n    if (!cleanSize) {\n      const skuSizeMatch = rawSku.match(/(XS|XXL|XXXL|XL|[SML])$/i);\n      if (skuSizeMatch) cleanSize = skuSizeMatch[1].toUpperCase();\n    }\n    if (!cleanColour && cleanSize) {\n      const withoutSize = rawSku.slice(0, rawSku.length - cleanSize.length);\n      const colourCode = withoutSize.slice(3, 5).toUpperCase();\n      cleanColour = colourMap[colourCode] || colourCode;\n    }\n  }\n\n  const refundedAmount = isFirst ? (refundsMap[item.__parentId] || 0) : 0;\n\n  itemsToInsert.push({\n    json: {\n      line_item_id: lineItemId,\n      order_id: parentOrder.order_id,\n      order_number: parentOrder.order_number,\n      sku: rawSku,\n      size: cleanSize,\n      colour: cleanColour,\n      lineitem_quantity: item.quantity || 1,\n      is_first_line_item: isFirst,\n      total: isFirst ? parentOrder.total : 0.00,\n      discount_amount: isFirst ? parentOrder.discount_amount : 0.00,\n      refunded_amount: parseFloat(refundedAmount.toFixed(2)),\n      discount_codes: parentOrder.discount_codes,\n      email: parentOrder.email,\n      accepts_marketing: parentOrder.accepts_marketing,\n      billing_name: parentOrder.billing_name,\n      billing_phone: parentOrder.billing_phone,\n      billing_city_name: parentOrder.billing_city_name,\n      billing_state_name: parentOrder.billing_state_name,\n      payment_method: parentOrder.payment_method,\n      fulfillment_status: parentOrder.fulfillment_status,\n      fulfilled_at: parentOrder.fulfilled_at,\n      created_at: parentOrder.created_at,\n      cancelled_at: parentOrder.cancelled_at,\n      updated_at: parentOrder.updated_at\n    }\n  });\n}\n\n// PASS 3: Orders with zero line items\nfor (const [orderId, order] of Object.entries(ordersMap)) {\n  if (orderItemTracker[order.order_id]) continue;\n\n  itemsToInsert.push({\n    json: {\n      line_item_id: order.order_id * -1,\n      order_id: order.order_id,\n      order_number: order.order_number,\n      sku: null,\n      size: null,\n      colour: null,\n      lineitem_quantity: 0,\n      is_first_line_item: true,\n      total: order.total,\n      discount_amount: order.discount_amount,\n      refunded_amount: parseFloat((refundsMap[orderId] || 0).toFixed(2)),\n      discount_codes: order.discount_codes,\n      email: order.email,\n      accepts_marketing: order.accepts_marketing,\n      billing_name: order.billing_name,\n      billing_phone: order.billing_phone,\n      billing_city_name: order.billing_city_name,\n      billing_state_name: order.billing_state_name,\n      payment_method: order.payment_method,\n      fulfillment_status: order.fulfillment_status,\n      fulfilled_at: order.fulfilled_at,\n      created_at: order.created_at,\n      cancelled_at: order.cancelled_at,\n      updated_at: order.updated_at\n    }\n  });\n}\n\nreturn itemsToInsert;\n"
+      },
+      "id": "d3ef3d18-af0d-467c-b2b1-ecc28732d6be",
+      "name": "Parse & Clean JSONL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-2288, -1248]
+    }
+  ],
+  "connections": {
+    "Start Export": { "main": [[{ "node": "Trigger Bulk", "type": "main", "index": 0 }]] },
+    "Is Operation Completed?": { "main": [[{ "node": "Download JSONL", "type": "main", "index": 0 }], [{ "node": "Wait 60 Seconds", "type": "main", "index": 0 }]] },
+    "Postgres Batch Upsert": { "main": [[{ "node": "Loop Over Items", "type": "main", "index": 0 }]] },
+    "Loop Over Items": { "main": [[{ "node": "No Operation, do nothing", "type": "main", "index": 0 }], [{ "node": "Postgres Batch Upsert", "type": "main", "index": 0 }]] },
+    "Wait 60 Seconds": { "main": [[{ "node": "STATUS", "type": "main", "index": 0 }]] },
+    "STATUS": { "main": [[{ "node": "Is Operation Completed?", "type": "main", "index": 0 }]] },
+    "Trigger Bulk": { "main": [[{ "node": "Wait 60 Seconds", "type": "main", "index": 0 }]] },
+    "Download JSONL": { "main": [[{ "node": "Parse & Clean JSONL", "type": "main", "index": 0 }]] },
+    "Parse & Clean JSONL": { "main": [[{ "node": "Loop Over Items", "type": "main", "index": 0 }]] }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "YOUR_INSTANCE_ID"
+  }
+}
